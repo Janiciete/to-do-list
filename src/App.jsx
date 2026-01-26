@@ -21,31 +21,23 @@ function App() {
     setTaskTypes(loadedTypes);
   }, []);
 
-  // Save tasks whenever they change
-  useEffect(() => {
-    saveTasks(tasks);
-  }, [tasks]);
-
-  // Save task types whenever they change
-  useEffect(() => {
-    if (taskTypes.length > 0) {
-      saveTaskTypes(taskTypes);
-    }
-  }, [taskTypes]);
-
   // Add new task
   const addTask = (newTask) => {
-    setTasks([...tasks, newTask]);
+    const updatedTasks = [...tasks, newTask];
+    setTasks(updatedTasks);
+    saveTasks(updatedTasks);
   };
 
   // Remove task
   const removeTask = (taskId) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
+    const updatedTasks = tasks.filter(task => task.id !== taskId);
+    setTasks(updatedTasks);
+    saveTasks(updatedTasks);
   };
 
   // Toggle task completion
   const toggleTaskComplete = (taskId) => {
-    setTasks(tasks.map(task => {
+    const updatedTasks = tasks.map(task => {
       if (task.id === taskId) {
         const updatedTask = {
           ...task,
@@ -59,7 +51,11 @@ function App() {
           if (newInstance) {
             // Add the new instance to tasks
             setTimeout(() => {
-              setTasks(prev => [...prev, newInstance]);
+              setTasks(prev => {
+                const newTasks = [...prev, newInstance];
+                saveTasks(newTasks);
+                return newTasks;
+              });
             }, 0);
           }
         }
@@ -67,14 +63,18 @@ function App() {
         return updatedTask;
       }
       return task;
-    }));
+    });
+    setTasks(updatedTasks);
+    saveTasks(updatedTasks);
   };
 
   // Toggle important status
   const toggleImportant = (taskId) => {
-    setTasks(tasks.map(task =>
+    const updatedTasks = tasks.map(task =>
       task.id === taskId ? { ...task, important: !task.important } : task
-    ));
+    );
+    setTasks(updatedTasks);
+    saveTasks(updatedTasks);
   };
 
   // Add new task type
